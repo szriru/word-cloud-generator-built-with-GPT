@@ -56,7 +56,7 @@ export default function WordCloud({ wordS }: WordCloudProps) {
   const rotationAnglesMinRef = useRef(null)
   const fontSizeMaxRef = useRef(null)
   const fontSizeMinRef = useRef(null)
-  const screenWidth = 500
+  let screenWidth = 500
   if(window){
     screenWidth = window.innerWidth
   }

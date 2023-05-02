@@ -2,7 +2,7 @@
 import cn from 'classnames'
 import { useState, useContext, useEffect } from 'react';
 import { Context } from './ContextProvider';
-import convertFormat from '@/lib/convertFormat'
+import { convertFormat } from '@/lib/convertFormat'
 
 interface InputFieldProps {
   className: string

@@ -57,7 +57,7 @@ export default function WordCloud({ wordS }: WordCloudProps) {
   const fontSizeMaxRef = useRef(null)
   const fontSizeMinRef = useRef(null)
   let screenWidth = 500
-  if(window){
+  if(typeof window !== "undefined"){
     screenWidth = window.innerWidth
   }
   

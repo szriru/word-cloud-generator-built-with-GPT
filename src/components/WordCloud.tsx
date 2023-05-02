@@ -56,7 +56,11 @@ export default function WordCloud({ wordS }: WordCloudProps) {
   const rotationAnglesMinRef = useRef(null)
   const fontSizeMaxRef = useRef(null)
   const fontSizeMinRef = useRef(null)
-  const screenWidth = window.innerWidth
+  const screenWidth = 500
+  if(window){
+    screenWidth = window.innerWidth
+  }
+  
   const [state, dispatch] = useReducer(reducer, {
     rotations: 2,
     rotationAngles: { min: 0, max: 90 },

@@ -18,7 +18,6 @@ export async function POST(request: Request) {
     temperature: 0.11,
   })
   const wordS = response?.data?.choices[0]?.text?.replace(/\n/g, '');
-  console.log(req_body.word, wordS)
   return NextResponse.json([req_body.word, wordS])
 }
 

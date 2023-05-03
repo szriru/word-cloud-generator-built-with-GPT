@@ -20,12 +20,12 @@ interface WordCloudProps {
 
 interface State {
   rotations: number
-  rotationAngles: { min: number, max: number}
-  fontSizes: { min: number, max: number}
+  rotationAngles: { min: number, max: number }
+  fontSizes: { min: number, max: number }
   isModalOpen: boolean
 }
 
-interface Options{
+interface Options {
   rotations: number
   rotationAngles: [number, number]
   fontSizes: [number, number]
@@ -34,12 +34,12 @@ interface Options{
 }
 
 type ACTIONTYPE =
-| { type: "SET_ROTATIONS"; payload: number }
-| { type: "SET_ROTATION_ANGLES"; payload: {min: number, max: number} }
-| { type: "SET_FONT_SIZES"; payload: {min: number, max: number} }
-| { type: "SET_MODAL_OPEN"; payload: boolean };
+  | { type: "SET_ROTATIONS"; payload: number }
+  | { type: "SET_ROTATION_ANGLES"; payload: { min: number, max: number } }
+  | { type: "SET_FONT_SIZES"; payload: { min: number, max: number } }
+  | { type: "SET_MODAL_OPEN"; payload: boolean };
 
-function reducer(state: State, action: ACTIONTYPE ) {
+function reducer(state: State, action: ACTIONTYPE) {
   switch (action.type) {
     case 'SET_ROTATIONS':
       return { ...state, rotations: action.payload };
@@ -61,10 +61,10 @@ export default function WordCloud({ wordS }: WordCloudProps) {
   const fontSizeMaxRef = useRef(null)
   const fontSizeMinRef = useRef(null)
   let screenWidth = 500
-  if(typeof window !== "undefined"){
+  if (typeof window !== "undefined") {
     screenWidth = window.innerWidth
   }
-  
+
   const [state, dispatch] = useReducer(reducer, {
     rotations: 2,
     rotationAngles: { min: 0, max: 90 },
@@ -72,8 +72,8 @@ export default function WordCloud({ wordS }: WordCloudProps) {
     isModalOpen: false,
   });
   const [isHTUOpen, setIsHTUOpen] = useState(false)
-  
-  const options: Options  = {
+
+  const options: Options = {
     rotations: state.rotations,
     rotationAngles: [state.rotationAngles.min, state.rotationAngles.max],
     fontSizes: [state.fontSizes.min, state.fontSizes.max],
@@ -112,13 +112,19 @@ export default function WordCloud({ wordS }: WordCloudProps) {
   return (
     <div className="flex flex-col shrink">
       <div ref={elementRef} className="w-full h-full m-4 ">
-        <ReactWordcloud
-          options={options}
-          size={screenWidth > 1000 ? [700, 550] : [screenWidth * 0.8, screenWidth * 0.85]}
-          words={fetching ? loadingWordS : wordS}
-        />
+        {typeof window !== "undefined" ? (
+          <ReactWordcloud
+            options={options}
+            size={screenWidth > 1000 ? [700, 550] : [screenWidth * 0.8, screenWidth * 0.85]}
+            words={fetching ? loadingWordS : wordS}
+          />
+        ) : (
+          <div>
+            
+          </div>
+        )}
       </div>
-      
+
       <ParamModal isOpen={state.isModalOpen}>
         <div className="flex flex-col justify-center gap-2 mb-2 ">
           <h1 className="underline">sorry this feature is under construction. it won't affect anything</h1>

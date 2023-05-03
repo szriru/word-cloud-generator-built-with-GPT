@@ -1,13 +1,13 @@
 'use client'
-import ReactWordcloud, { OptionsProp } from "react-wordcloud"
-import cn from 'classnames'
+import ReactWordcloud from "react-wordcloud"
 import { useReducer, useRef, useState } from "react";
-import { Context } from '@/components/ContextProvider'
+import { wcContext } from '@/components/ContextProvider'
 import { useContext } from 'react'
 import { loadingWordS } from "@/utils/constants";
-import { toPng } from 'html-to-image';
+import saveElementAsImage from "@/lib/saveElementAsImage";
 import ParamModal from '@/components/ParamModal'
 import Link from "next/link";
+import { IconBxRefresh } from "./Icons";
 
 type WordS = Array<{
   text: string
@@ -18,16 +18,6 @@ interface WordCloudProps {
   wordS: WordS
 }
 
-async function saveElementAsImage(element: any) {
-  await toPng(element)
-    .then(function (dataUrl) {
-      var link = document.createElement('a');
-      link.download = 'my-image.png';
-      link.href = dataUrl;
-      link.click();
-    });
-}
-
 interface State {
   rotations: number
   rotationAngles: { min: number, max: number}
@@ -35,7 +25,21 @@ interface State {
   isModalOpen: boolean
 }
 
-function reducer(state: State, action: any) {
+interface Options{
+  rotations: number
+  rotationAngles: [number, number]
+  fontSizes: [number, number]
+  fontWeight: string
+  transitionDuration: number
+}
+
+type ACTIONTYPE =
+| { type: "SET_ROTATIONS"; payload: number }
+| { type: "SET_ROTATION_ANGLES"; payload: {min: number, max: number} }
+| { type: "SET_FONT_SIZES"; payload: {min: number, max: number} }
+| { type: "SET_MODAL_OPEN"; payload: boolean };
+
+function reducer(state: State, action: ACTIONTYPE ) {
   switch (action.type) {
     case 'SET_ROTATIONS':
       return { ...state, rotations: action.payload };
@@ -46,7 +50,7 @@ function reducer(state: State, action: any) {
     case 'SET_MODAL_OPEN':
       return { ...state, isModalOpen: action.payload };
     default:
-      throw new Error(`Unsupported action type: ${action.type}`);
+      throw new Error(`Unsupported action type`);
   }
 }
 
@@ -69,7 +73,7 @@ export default function WordCloud({ wordS }: WordCloudProps) {
   });
   const [isHTUOpen, setIsHTUOpen] = useState(false)
   
-  const options = {
+  const options: Options  = {
     rotations: state.rotations,
     rotationAngles: [state.rotationAngles.min, state.rotationAngles.max],
     fontSizes: [state.fontSizes.min, state.fontSizes.max],
@@ -80,6 +84,7 @@ export default function WordCloud({ wordS }: WordCloudProps) {
     dispatch({ type: "SET_MODAL_OPEN", payload: true })
   }
   function handleCloseModalAndSetParams() {
+    // this params change cause errors to React-WordCloud. It won't render. the window will freeze.
     // dispatch({ type: 'SET_ROTATIONS', payload: rotationsRef.current.value });
     // dispatch({
     //   type: 'SET_ROTATION_ANGLES',
@@ -98,7 +103,7 @@ export default function WordCloud({ wordS }: WordCloudProps) {
     dispatch({ type: 'SET_MODAL_OPEN', payload: false });
   }
 
-  const { fetching } = useContext(Context)
+  const { fetching } = useContext(wcContext)
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void
   const elementRef = useRef(null);
   function handleSaveImage() {
@@ -108,7 +113,7 @@ export default function WordCloud({ wordS }: WordCloudProps) {
     <div className="flex flex-col shrink">
       <div ref={elementRef} className="w-full h-full m-4 ">
         <ReactWordcloud
-          options={options as OptionsProp}
+          options={options}
           size={screenWidth > 1000 ? [700, 550] : [screenWidth * 0.8, screenWidth * 0.85]}
           words={fetching ? loadingWordS : wordS}
         />
@@ -131,8 +136,6 @@ export default function WordCloud({ wordS }: WordCloudProps) {
             <span>Min</span><input ref={fontSizeMinRef} defaultValue={state.fontSizes.min} className="ring-1 p-1" type="number" max={state.fontSizes.max} min={1} />
             <span>Max</span><input ref={fontSizeMaxRef} defaultValue={state.fontSizes.max} className="ring-1 p-1" type="number" max={100} min={state.fontSizes.min} />
           </div>
-          {/* this params change cause errors to React-WordCloud. It won't render. the window will freeze. */}
-
         </div>
         <div className="flex justify-center items-center">
           <button className="ring-1 w-fit ring-red-500 bg-blue-500 text-white rounded-xl p-1" onClick={handleCloseModalAndSetParams}>SET Params</button>
@@ -161,26 +164,9 @@ export default function WordCloud({ wordS }: WordCloudProps) {
         <button className="p-1 rounded-xl bg-blue-500" onClick={handleOpenModal}>Adjust Params</button>
         <button onClick={forceUpdate} className="flex items-center p-1 rounded-xl bg-blue-500">
           <p>Re-render</p>
-          <IconBxRefresh className='text-3xl' />
+          <span className="text-3xl"><IconBxRefresh /></span>
         </button>
       </div>
     </div >
   )
-}
-
-interface IconBxRefreshProps {
-  className: string
-}
-function IconBxRefresh({ className }: IconBxRefreshProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      height="1em"
-      width="1em"
-      className={cn(className)}
-    >
-      <path d="M10 11H7.101l.001-.009a4.956 4.956 0 01.752-1.787 5.054 5.054 0 012.2-1.811c.302-.128.617-.226.938-.291a5.078 5.078 0 012.018 0 4.978 4.978 0 012.525 1.361l1.416-1.412a7.036 7.036 0 00-2.224-1.501 6.921 6.921 0 00-1.315-.408 7.079 7.079 0 00-2.819 0 6.94 6.94 0 00-1.316.409 7.04 7.04 0 00-3.08 2.534 6.978 6.978 0 00-1.054 2.505c-.028.135-.043.273-.063.41H2l4 4 4-4zm4 2h2.899l-.001.008a4.976 4.976 0 01-2.103 3.138 4.943 4.943 0 01-1.787.752 5.073 5.073 0 01-2.017 0 4.956 4.956 0 01-1.787-.752 5.072 5.072 0 01-.74-.61L7.05 16.95a7.032 7.032 0 002.225 1.5c.424.18.867.317 1.315.408a7.07 7.07 0 002.818 0 7.031 7.031 0 004.395-2.945 6.974 6.974 0 001.053-2.503c.027-.135.043-.273.063-.41H22l-4-4-4 4z" />
-    </svg>
-  );
 }

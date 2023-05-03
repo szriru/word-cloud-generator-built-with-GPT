@@ -2,21 +2,6 @@
 import { createContext, useState } from 'react';
 import { defaultWordS } from '@/utils/constants'
 
-export const Context = createContext<createContextProps>({
-  word: "",
-  setWord: () => {},
-  wordS: [],
-  setWordS: () => {},
-  fetching: false,
-  setFetching: () => {},
-});
-
-type Word = string
-type WordS = Array<{
-  text: string
-  value: number
-}>
-
 interface createContextProps {
   word: Word
   setWord: React.Dispatch<React.SetStateAction<Word>>
@@ -30,14 +15,29 @@ interface contextProviderProps {
   children: React.ReactNode;
 }
 
-export default function contextProvider({ children }: contextProviderProps) {
+type Word = string
+type WordS = Array<{
+  text: string
+  value: number
+}>
+
+export const wcContext = createContext<createContextProps>({
+  word: "",
+  setWord: () => {},
+  wordS: [{text: "", value: 1}],
+  setWordS: () => {},
+  fetching: false,
+  setFetching: () => {},
+});
+
+export default function ContextProvider({ children }: contextProviderProps) {
   const [word, setWord] = useState<Word>("Mike O'hearn")
   const [wordS, setWordS] = useState<WordS>(defaultWordS)
   const [fetching, setFetching] = useState(false)
 
   return (
-    <Context.Provider value={{ word, setWord, wordS, setWordS, fetching, setFetching }}>
+    <wcContext.Provider value={{ word, setWord, wordS, setWordS, fetching, setFetching }}>
       {children}
-    </Context.Provider>
+    </wcContext.Provider>
   );
 }

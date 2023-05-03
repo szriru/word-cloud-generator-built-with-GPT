@@ -17,6 +17,7 @@ export default function MainContent() {
         <p className='flex gap-2 text-3xl'>
           <Link target="_blank" href={"https://twitter.com/sz_riru"}><IconTwitterCircle /></Link>
           <Link target="_blank" href={"https://github.com/szriru/word-cloud-generator-built-with-GPT"}><IconGithub /></Link>
+          <Link target="_blank" href={"https://www.szriru.com/post/created-word-cloud-generator-with-gpt"}>My blog</Link>
         </p>
         <h2 className='font-normal text-3xl underline'><span className='text-red-500 text-semibold'>{word ? word : ""}</span>'s wordcloud</h2>
       </header>

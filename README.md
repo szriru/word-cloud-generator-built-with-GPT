@@ -4,4 +4,4 @@
 
 [DEMO](https://word-cloud-generator-built-with-gpt.vercel.app/)
 
-![sample image](https://github.com/szriru/word-cloud-generator-built-with-GPT/tree/main/doc/images/wordCloudGen_sampleImage.png)
+![sample image](https://raw.githubusercontent.com/szriru/word-cloud-generator-built-with-GPT/main/doc/images/wordCloudGen_sampleImage.png)

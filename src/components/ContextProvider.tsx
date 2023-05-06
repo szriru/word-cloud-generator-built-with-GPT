@@ -1,6 +1,7 @@
 'use client';
 import { createContext, useState } from 'react';
 import { defaultWordS } from '@/utils/constants'
+import { Word, WordS } from '@/utils/types';
 
 interface createContextProps {
   word: Word
@@ -14,12 +15,6 @@ interface createContextProps {
 interface contextProviderProps {
   children: React.ReactNode;
 }
-
-type Word = string
-type WordS = Array<{
-  text: string
-  value: number
-}>
 
 export const wcContext = createContext<createContextProps>({
   word: "",

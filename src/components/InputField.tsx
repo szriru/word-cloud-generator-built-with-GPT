@@ -3,6 +3,7 @@ import cn from 'classnames'
 import { useState, useContext, useEffect } from 'react';
 import { wcContext } from './ContextProvider';
 import { convertFormat } from '@/lib/convertFormat'
+import reqToOpenAi from "@/lib/reqToOpenAi"
 
 interface InputFieldProps {
   className?: string
@@ -55,26 +56,21 @@ const InputField = ({ className }: InputFieldProps) => {
       'word': tmpWord
     }
 
-    const getWordCloud = async () => {
-      const res = await fetch('/api/getwordcloud', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      return res
-    }
-
-    getWordCloud().then(res => res.json()).then(res => {
+    reqToOpenAi(data).then(res => {
       // res expected to be [word, wordS]
-      const evaled = eval(res[1])
-      const processed = JSON.parse(JSON.stringify(evaled))
-      const convertedWords = convertFormat(processed)
-      setWord(res[0])
-      setWordS(convertedWords)
-      setFetching(false)
-      localStorage.setItem("Word", res[0])
-      localStorage.setItem("WordS", JSON.stringify(convertedWords))
-      localStorage.setItem("OPENAI_APIKEY", apiKeyValue)
+      if ((res[0] !== undefined) && (res[1] !== undefined)) {
+        const evaled = eval(res[1])
+        const processed = JSON.parse(JSON.stringify(evaled))
+        const convertedWords = convertFormat(processed)
+        setWord(res[0])
+        setWordS(convertedWords)
+        setFetching(false)
+        localStorage.setItem("Word", res[0])
+        localStorage.setItem("WordS", JSON.stringify(convertedWords))
+        localStorage.setItem("OPENAI_APIKEY", apiKeyValue)
+      }else{
+        throw new Error("res[0] or res[1] is undefined")
+      }
     }).catch(err => { throw new Error(err) })
   }
 
@@ -110,7 +106,7 @@ const InputField = ({ className }: InputFieldProps) => {
             </svg>
             <span className="sr-only">Loading...</span>
           </div>
-        ): (
+        ) : (
           <span>Make</span>
         )}
       </button>

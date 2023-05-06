@@ -18,6 +18,7 @@ function isValidApiKey(apiKeyValue: string) {
 const InputField = ({ className }: InputFieldProps) => {
   const [tmpWord, setTmpWord] = useState<string>('')
   const [apiKeyValue, setApiKeyValue] = useState<string>('')
+  const [numWords, setNumWords] = useState<number>(30)
   const [isApiKeyValid, setIsApiKeyValid] = useState<boolean>(false);
   const { setWord, setWordS, fetching, setFetching } = useContext(wcContext)
 
@@ -47,13 +48,17 @@ const InputField = ({ className }: InputFieldProps) => {
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setApiKeyValue(e.target.value)
   }
+  const handleNumWordsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNumWords(parseInt(e.target.value))
+  }
 
   const handleClick = () => {
     if (!isApiKeyValid) { throw new Error("Invalid OPEN-AI APY KEY") }
     setFetching(true)
     const data = {
       'OPEN_AI_APIKEY': apiKeyValue,
-      'word': tmpWord
+      'word': tmpWord,
+      'number_of_words': numWords
     }
 
     reqToOpenAi(data).then(res => {
@@ -82,7 +87,6 @@ const InputField = ({ className }: InputFieldProps) => {
         onChange={handleApiKeyChange}
         className='p-2 rounded-xl text-black'
         placeholder="enter your OPEN AI API KEY"
-        max="100"
         disabled={fetching}
       />
       {!isApiKeyValid && (
@@ -94,7 +98,15 @@ const InputField = ({ className }: InputFieldProps) => {
         onChange={handleTmpWordChange}
         className='p-2 rounded-xl text-black'
         placeholder="enter your word"
-        max="30"
+        disabled={fetching}
+      />
+      <input
+        type="number"
+        value={numWords}
+        onChange={handleNumWordsChange}
+        className='p-2 rounded-xl text-black'
+        placeholder="number of words"
+        max="60"
         disabled={fetching}
       />
       <button disabled={fetching || !isApiKeyValid} onClick={handleClick} className={`p-2 rounded-xl ${!isApiKeyValid ? "bg-neutral-400" : "bg-blue-500"}`}>

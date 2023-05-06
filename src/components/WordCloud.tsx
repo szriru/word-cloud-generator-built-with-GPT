@@ -8,11 +8,7 @@ import saveElementAsImage from "@/lib/saveElementAsImage";
 import ParamModal from '@/components/ParamModal'
 import Link from "next/link";
 import { IconBxRefresh } from "./Icons";
-
-type WordS = Array<{
-  text: string
-  value: number
-}>
+import { WordS } from "@/utils/types";
 
 interface WordCloudProps {
   wordS: WordS
@@ -55,11 +51,11 @@ function reducer(state: State, action: ACTIONTYPE) {
 }
 
 export default function WordCloud({ wordS }: WordCloudProps) {
-  const rotationsRef = useRef(null)
-  const rotationAnglesMaxRef = useRef(null)
-  const rotationAnglesMinRef = useRef(null)
-  const fontSizeMaxRef = useRef(null)
-  const fontSizeMinRef = useRef(null)
+  const rotationsRef = useRef<HTMLInputElement | null>(null)
+  const rotationAnglesMaxRef = useRef<HTMLInputElement | null>(null)
+  const rotationAnglesMinRef = useRef<HTMLInputElement | null>(null)
+  const fontSizeMaxRef = useRef<HTMLInputElement | null>(null)
+  const fontSizeMinRef = useRef<HTMLInputElement | null>(null)
   let screenWidth = 500
   if (typeof window !== "undefined") {
     screenWidth = window.innerWidth
@@ -84,22 +80,22 @@ export default function WordCloud({ wordS }: WordCloudProps) {
     dispatch({ type: "SET_MODAL_OPEN", payload: true })
   }
   function handleCloseModalAndSetParams() {
-    // this params change cause errors to React-WordCloud. It won't render. the window will freeze.
-    // dispatch({ type: 'SET_ROTATIONS', payload: rotationsRef.current.value });
-    // dispatch({
-    //   type: 'SET_ROTATION_ANGLES',
-    //   payload: {
-    //     min: rotationAnglesMinRef.current.value,
-    //     max: rotationAnglesMaxRef.current.value,
-    //   },
-    // });
-    // dispatch({
-    //   type: 'SET_FONT_SIZES',
-    //   payload: {
-    //     min: fontSizeMinRef.current.value,
-    //     max: fontSizeMaxRef.current.value,
-    //   },
-    // });
+    //this params change cause errors to React-WordCloud. It won't render. the window will freeze.
+    dispatch({ type: 'SET_ROTATIONS', payload: parseInt(rotationsRef?.current?.value!) });
+    dispatch({
+      type: 'SET_ROTATION_ANGLES',
+      payload: {
+        min: parseInt(rotationAnglesMinRef?.current?.value!),
+        max: parseInt(rotationAnglesMaxRef?.current?.value!),
+      },
+    });
+    dispatch({
+      type: 'SET_FONT_SIZES',
+      payload: {
+        min: parseInt(fontSizeMinRef?.current?.value!),
+        max: parseInt(fontSizeMaxRef?.current?.value!),
+      },
+    });
     dispatch({ type: 'SET_MODAL_OPEN', payload: false });
   }
 
@@ -127,7 +123,6 @@ export default function WordCloud({ wordS }: WordCloudProps) {
 
       <ParamModal isOpen={state.isModalOpen}>
         <div className="flex flex-col justify-center gap-2 mb-2 ">
-          <h1 className="underline">sorry this feature is under construction. it won't affect anything</h1>
           <div className="flex gap-2 justify-start items-center">
             <label>Rotations:</label>
             <input className="ring-1 p-1" ref={rotationsRef} defaultValue={state.rotations} type="number" max={10} min={0} step={1} />
